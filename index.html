@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tinninnan Daniel Soro — Data Scientist | Finance & Banque</title>
+  <meta name="description" content="Portfolio de Tinninnan Daniel Soro, Data Scientist spécialisé en finance quantitative, détection de fraude, analyse de risque et machine learning. Ottawa, Canada." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg:           #040810;
+      --bg-card:      #070d1a;
+      --bg-panel:     #0a1225;
+      --navy:         #0b1a38;
+      --navy-light:   #112247;
+      --accent:       #c9a84c;
+      --accent-glow:  rgba(201,168,76,0.22);
+      --accent-soft:  rgba(201,168,76,0.09);
+      --accent-2:     #e6c97a;
+      --accent-3:     #f0d99a;
+      --blue:         #1e5fa8;
+      --blue-light:   #2e7cd6;
+      --blue-soft:    rgba(30,95,168,0.15);
+      --text:         #dce6f0;
+      --text-muted:   #5a6e8a;
+      --text-soft:    #8da0b8;
+      --border:       rgba(201,168,76,0.14);
+      --border-navy:  rgba(30,95,168,0.18);
+      --border-soft:  rgba(255,255,255,0.05);
+      --radius:       8px;
+      --radius-lg:    16px;
+      --font-title:   'Playfair Display', serif;
+      --font-body:    'Inter', sans-serif;
+      --section-py:   clamp(5rem, 9vw, 8rem);
+      --max-w:        1200px;
+      --transition:   0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.7; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    ul { list-style: none; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 99px; }
+
+    .grid-bg {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image: linear-gradient(rgba(201,168,76,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.025) 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+    .radial-tl { position: fixed; top: 0; left: 0; width: 600px; height: 600px; background: radial-gradient(ellipse at top left, rgba(30,95,168,0.12) 0%, transparent 65%); pointer-events: none; z-index: 0; }
+    .radial-br { position: fixed; bottom: 0; right: 0; width: 500px; height: 500px; background: radial-gradient(ellipse at bottom right, rgba(201,168,76,0.08) 0%, transparent 65%); pointer-events: none; z-index: 0; }
+
+    section { position: relative; z-index: 1; padding: var(--section-py) 1.5rem; }
+    .container { max-width: var(--max-w); margin: 0 auto; width: 100%; }
+
+    .section-label { display: inline-flex; align-items: center; gap: 0.7rem; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+    .section-label::before { content: ''; display: block; width: 28px; height: 1px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .section-title { font-family: var(--font-title); font-size: clamp(1.9rem, 3.2vw, 2.9rem); font-weight: 700; line-height: 1.15; color: #fff; margin-bottom: 0.9rem; }
+    .section-title span { color: var(--accent-2); }
+    .section-subtitle { color: var(--text-muted); font-size: 0.97rem; max-width: 560px; line-height: 1.75; }
+
+    .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-delay-1 { transition-delay: 0.08s; }
+    .reveal-delay-2 { transition-delay: 0.16s; }
+    .reveal-delay-3 { transition-delay: 0.24s; }
+    .reveal-delay-4 { transition-delay: 0.32s; }
+    .reveal-delay-5 { transition-delay: 0.40s; }
+
+    /* ── NAV ── */
+    #nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 1.5rem; height: 68px; display: flex; align-items: center; transition: background var(--transition), border-color var(--transition); border-bottom: 1px solid transparent; }
+    #nav.scrolled { background: rgba(4,8,16,0.94); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom-color: rgba(201,168,76,0.1); }
+    .nav-inner { max-width: var(--max-w); margin: 0 auto; width: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font-family: var(--font-title); font-size: 1.05rem; font-weight: 700; color: #fff; letter-spacing: 0.04em; display: flex; align-items: center; gap: 0.6rem; }
+    .nav-logo-emblem { width: 32px; height: 32px; border-radius: 6px; background: linear-gradient(135deg, var(--navy-light), var(--navy)); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: var(--accent-2); font-family: var(--font-body); }
+    .nav-links { display: flex; gap: 1.8rem; align-items: center; }
+    .nav-links a { font-size: 0.76rem; font-weight: 500; color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase; transition: color var(--transition); }
+    .nav-links a:hover { color: var(--accent-2); }
+    .nav-cta { padding: 0.42rem 1.2rem !important; border: 1px solid var(--accent) !important; color: var(--accent) !important; border-radius: 5px !important; transition: background var(--transition), color var(--transition) !important; }
+    .nav-cta:hover { background: var(--accent) !important; color: var(--bg) !important; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: transform 0.3s, opacity 0.3s; }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu { display: none; position: fixed; inset: 0; background: rgba(4,8,16,0.98); backdrop-filter: blur(24px); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .mobile-menu.open { display: flex; opacity: 1; pointer-events: all; }
+    .mobile-menu a { font-family: var(--font-title); font-size: 1.8rem; font-weight: 700; color: var(--text-muted); transition: color 0.2s; }
+    .mobile-menu a:hover { color: var(--accent-2); }
+
+    /* ── HERO ── */
+    #hero { min-height: 100vh; display: flex; align-items: center; padding: 8rem 1.5rem 5rem; overflow: hidden; position: relative; }
+    #hero::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(-55deg, transparent, transparent 60px, rgba(201,168,76,0.015) 60px, rgba(201,168,76,0.015) 61px); pointer-events: none; }
+    .hero-inner { max-width: var(--max-w); margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 0.8rem; padding: 0.4rem 1rem; border: 1px solid rgba(201,168,76,0.25); border-radius: 4px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 2.2rem; background: rgba(201,168,76,0.06); animation: fadeUp 0.7s ease both; }
+    .hero-badge .status-dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); } 50% { box-shadow: 0 0 0 5px rgba(34,197,94,0); } }
+    .hero-name { font-family: var(--font-title); font-size: clamp(2.6rem, 6vw, 5.2rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.01em; color: #fff; animation: fadeUp 0.7s 0.1s ease both; }
+    .hero-name .gold { background: linear-gradient(90deg, var(--accent), var(--accent-3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-role { font-size: clamp(1rem, 2.2vw, 1.5rem); font-weight: 400; color: var(--text-soft); margin-top: 0.8rem; animation: fadeUp 0.7s 0.18s ease both; }
+    .hero-role .typed-text { color: var(--accent-2); font-weight: 600; }
+    .hero-role .cursor { display: inline-block; width: 2px; height: 1em; background: var(--accent-2); margin-left: 2px; vertical-align: middle; animation: blink 1s step-end infinite; }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+    .hero-tagline { font-size: 0.95rem; color: var(--text-muted); font-style: italic; margin-top: 1.6rem; animation: fadeUp 0.7s 0.26s ease both; border-left: 2px solid var(--accent); padding: 0.5rem 0 0.5rem 1.2rem; max-width: 520px; line-height: 1.7; }
+    .hero-tagline strong { color: var(--text-soft); font-style: normal; font-weight: 600; }
+    .hero-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; animation: fadeUp 0.7s 0.30s ease both; }
+    .chip { padding: 0.3rem 0.85rem; border: 1px solid var(--border-navy); border-radius: 4px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; color: var(--blue-light); background: var(--blue-soft); text-transform: uppercase; }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; animation: fadeUp 0.7s 0.36s ease both; }
+    .btn-gold { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 2rem; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #060e1f; border-radius: 5px; font-weight: 700; font-size: 0.88rem; letter-spacing: 0.04em; transition: box-shadow var(--transition), transform var(--transition), opacity var(--transition); }
+    .btn-gold:hover { box-shadow: 0 0 32px var(--accent-glow); transform: translateY(-2px); opacity: 0.92; }
+    .btn-outline-gold { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 2rem; border: 1px solid rgba(201,168,76,0.3); color: var(--accent-2); border-radius: 5px; font-weight: 600; font-size: 0.88rem; transition: border-color var(--transition), background var(--transition), transform var(--transition); }
+    .btn-outline-gold:hover { border-color: var(--accent); background: var(--accent-soft); transform: translateY(-2px); }
+    .hero-metrics { display: flex; gap: 3rem; flex-wrap: wrap; margin-top: 4.5rem; padding-top: 2.5rem; border-top: 1px solid rgba(201,168,76,0.1); animation: fadeUp 0.7s 0.44s ease both; }
+    .hero-metric-num { font-family: var(--font-title); font-size: 2.2rem; font-weight: 800; color: #fff; line-height: 1; }
+    .hero-metric-num span { color: var(--accent-2); }
+    .hero-metric-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.3rem; letter-spacing: 0.05em; text-transform: uppercase; }
+    .hero-metric-div { width: 1px; background: rgba(201,168,76,0.1); align-self: stretch; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── ABOUT ── */
+    #about { background: var(--bg); }
+    .about-grid { display: grid; grid-template-columns: 280px 1fr; gap: 5rem; align-items: start; }
+    .about-photo-col { display: flex; flex-direction: column; align-items: center; gap: 1.4rem; }
+    .about-photo-frame {
+      position: relative;
+      width: 260px;
+      border-radius: 12px;
+      overflow: visible;
+      background: var(--bg-panel);
+      box-shadow: 0 0 0 1px rgba(201,168,76,0.18), 0 32px 64px rgba(0,0,0,0.55);
+    }
+    .about-photo-frame::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2), transparent); z-index: 3; border-radius: 12px 12px 0 0; }
+    .about-photo-frame::after { content: ''; position: absolute; bottom: 0; right: 0; width: 40px; height: 40px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); border-radius: 0 0 12px 0; z-index: 3; }
+    /* Clip avec padding-top pour espace au-dessus de la tête */
+    .about-photo-clip {
+      width: 260px;
+      height: 350px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg-panel);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-top: 16px; /* espace visible au-dessus de la tête */
+    }
+    .about-photo {
+      width: 100%;
+      flex: 1;
+      object-fit: cover;
+      object-position: center top; /* cadrage depuis le sommet */
+      display: block;
+      filter: brightness(0.96) contrast(1.03) saturate(1.05);
+      transition: transform 0.5s ease;
+    }
+    .about-photo-frame:hover .about-photo { transform: scale(1.03); }
+    .about-photo-placeholder { width: 260px; height: 350px; display: flex; align-items: center; justify-content: center; font-size: 5rem; background: var(--bg-panel); border-radius: 12px; }
+    .about-photo-badge { position: absolute; bottom: -14px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #0a1225, #0d1a3a); backdrop-filter: blur(10px); border: 1px solid rgba(201,168,76,0.3); border-radius: 6px; padding: 0.45rem 1rem; font-size: 0.7rem; font-weight: 700; color: var(--accent-2); white-space: nowrap; z-index: 4; display: flex; align-items: center; gap: 0.5rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .about-photo-badge::before { content: ''; width: 6px; height: 6px; background: #22c55e; border-radius: 50%; flex-shrink: 0; animation: pulse 2s infinite; }
+    .about-social-links { display: flex; gap: 0.6rem; margin-top: 1.2rem; }
+    .about-social-link { width: 38px; height: 38px; border: 1px solid rgba(201,168,76,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: border-color var(--transition), color var(--transition), background var(--transition); }
+    .about-social-link:hover { border-color: var(--accent); color: var(--accent-2); background: var(--accent-soft); }
+    .about-content { padding-top: 0.5rem; }
+    .about-bio { font-size: 0.97rem; color: var(--text-soft); margin: 1.4rem 0 2.2rem; line-height: 1.85; max-width: 560px; }
+    .about-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 2.5rem; }
+    .about-detail-item { display: flex; align-items: center; gap: 0.65rem; font-size: 0.85rem; color: var(--text-muted); padding: 0.65rem 0.95rem; background: var(--bg-panel); border: 1px solid var(--border-soft); border-radius: 8px; transition: border-color var(--transition); }
+    .about-detail-item:hover { border-color: rgba(201,168,76,0.15); }
+    .about-detail-item svg { color: var(--accent); flex-shrink: 0; }
+    .domain-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.9rem; }
+    .domain-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .domain-chip { padding: 0.32rem 0.85rem; border: 1px solid rgba(201,168,76,0.2); border-radius: 4px; font-size: 0.72rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); letter-spacing: 0.04em; }
+
+    /* ── EXPERIENCE ── */
+    #experience { background: var(--bg-card); border-top: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft); }
+    .exp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+    .exp-col-title { font-family: var(--font-title); font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 2rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(201,168,76,0.12); display: flex; align-items: center; gap: 0.6rem; }
+    .exp-col-title svg { color: var(--accent); }
+    .timeline { position: relative; padding-left: 1.6rem; }
+    .timeline::before { content: ''; position: absolute; top: 6px; bottom: 0; left: 0; width: 1px; background: linear-gradient(180deg, var(--accent), transparent); }
+    .timeline-item { position: relative; margin-bottom: 2.4rem; }
+    .timeline-item:last-child { margin-bottom: 0; }
+    .timeline-item::before { content: ''; position: absolute; left: -1.62rem; top: 0.42rem; width: 9px; height: 9px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 0 3px rgba(201,168,76,0.15); }
+    .timeline-date { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.3rem; }
+    .timeline-role { font-family: var(--font-title); font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem; }
+    .timeline-company { font-size: 0.82rem; color: var(--blue-light); font-weight: 600; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem; }
+    .timeline-desc { font-size: 0.84rem; color: var(--text-muted); line-height: 1.72; }
+
+    /* ── SKILLS ── */
+    #skills { background: var(--bg); border-bottom: 1px solid var(--border-soft); }
+    .skills-header { max-width: 600px; margin-bottom: 3.5rem; }
+    .skills-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.4rem; }
+    .skill-card { background: var(--bg-panel); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: 1.8rem; transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition); position: relative; overflow: hidden; }
+    .skill-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-2), transparent); opacity: 0; transition: opacity var(--transition); }
+    .skill-card:hover { border-color: rgba(201,168,76,0.2); transform: translateY(-3px); box-shadow: 0 20px 50px rgba(0,0,0,0.35); }
+    .skill-card:hover::before { opacity: 1; }
+    .skill-card-icon { font-size: 1.4rem; margin-bottom: 1.1rem; }
+    .skill-card-title { font-family: var(--font-title); font-size: 0.98rem; font-weight: 700; color: #fff; margin-bottom: 1.5rem; }
+    .skill-item { margin-bottom: 1rem; }
+    .skill-item:last-child { margin-bottom: 0; }
+    .skill-info { display: flex; justify-content: space-between; margin-bottom: 0.35rem; }
+    .skill-name { font-size: 0.82rem; color: var(--text-soft); font-weight: 500; }
+    .skill-pct { font-size: 0.74rem; color: var(--accent); font-weight: 700; }
+    .skill-bar-bg { height: 3px; background: rgba(255,255,255,0.05); border-radius: 99px; overflow: hidden; }
+    .skill-bar-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--accent)); border-radius: 99px; width: 0%; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+
+    /* ── CERTIFICATIONS ── */
+    #certifications { background: var(--bg-card); border-bottom: 1px solid var(--border-soft); }
+    .certs-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; margin-top: 3rem; }
+    .cert-card { background: var(--bg-panel); border: 1px solid var(--border-soft); border-radius: var(--radius); padding: 1.4rem 1.5rem; display: flex; align-items: flex-start; gap: 1rem; transition: border-color var(--transition), transform var(--transition); }
+    .cert-card:hover { border-color: rgba(201,168,76,0.22); transform: translateY(-2px); }
+    .cert-icon { width: 42px; height: 42px; flex-shrink: 0; border-radius: 8px; background: var(--blue-soft); border: 1px solid var(--border-navy); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+    .cert-name { font-size: 0.88rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem; line-height: 1.35; }
+    .cert-issuer { font-size: 0.75rem; color: var(--blue-light); font-weight: 600; }
+    .cert-year { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    /* ── PROJECTS ── */
+    #projects { background: var(--bg); }
+    .projects-header { margin-bottom: 3.5rem; }
+    .projects-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.4rem; }
+    .project-card { background: var(--bg-panel); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition); position: relative; }
+    .project-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); opacity: 0; transition: opacity var(--transition); }
+    .project-card:hover { border-color: rgba(201,168,76,0.25); transform: translateY(-5px); box-shadow: 0 24px 56px rgba(0,0,0,0.4); }
+    .project-card:hover::after { opacity: 1; }
+    .project-thumb { position: relative; height: 155px; overflow: hidden; background: var(--bg-card); display: flex; align-items: center; justify-content: center; }
+    .project-thumb-bg { position: absolute; inset: 0; background: linear-gradient(135deg, var(--navy) 0%, var(--bg-card) 100%); }
+    .project-thumb-inner { font-size: 3.2rem; position: relative; z-index: 1; transition: transform 0.5s ease; }
+    .project-card:hover .project-thumb-inner { transform: scale(1.1); }
+    .project-thumb-overlay { position: absolute; inset: 0; background: rgba(10,18,37,0.92); opacity: 0; display: flex; align-items: center; justify-content: center; gap: 0.8rem; transition: opacity var(--transition); z-index: 2; }
+    .project-card:hover .project-thumb-overlay { opacity: 1; }
+    .project-link-btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.5rem 1.1rem; background: rgba(201,168,76,0.15); color: var(--accent-2); border-radius: 4px; font-size: 0.78rem; font-weight: 700; border: 1px solid rgba(201,168,76,0.3); transition: background 0.2s; }
+    .project-link-btn:hover { background: rgba(201,168,76,0.3); }
+    .project-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+    .project-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
+    .tag { padding: 0.18rem 0.6rem; background: var(--blue-soft); color: var(--blue-light); border-radius: 3px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em; border: 1px solid var(--border-navy); }
+    .tag-gold { background: var(--accent-soft) !important; color: var(--accent-2) !important; border: 1px solid rgba(201,168,76,0.2) !important; }
+    .project-title { font-family: var(--font-title); font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.55rem; line-height: 1.35; }
+    .project-desc { font-size: 0.84rem; color: var(--text-muted); line-height: 1.7; flex: 1; }
+    .project-impact { margin-top: 1rem; padding: 0.55rem 0.85rem; background: rgba(201,168,76,0.06); border-left: 2px solid var(--accent); border-radius: 0 4px 4px 0; font-size: 0.76rem; color: var(--accent-2); font-weight: 600; }
+
+    /* ── CONTACT ── */
+    #contact { background: var(--bg-card); border-top: 1px solid var(--border-soft); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.55fr; gap: 5rem; align-items: start; }
+    .contact-info-title { font-family: var(--font-title); font-size: 1.4rem; font-weight: 700; color: #fff; margin-bottom: 0.8rem; }
+    .contact-info-text { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 2.5rem; line-height: 1.75; }
+    .contact-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.3rem; }
+    .contact-item-icon { width: 42px; height: 42px; border-radius: 8px; background: var(--accent-soft); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--accent); }
+    .contact-item-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .contact-item-value { font-size: 0.87rem; color: var(--text-soft); font-weight: 500; }
+    .form-card { background: var(--bg-panel); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: 2.4rem; box-shadow: 0 0 0 1px rgba(201,168,76,0.05); }
+    .form-card-header { font-family: var(--font-title); font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 1.8rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(201,168,76,0.1); display: flex; align-items: center; gap: 0.6rem; }
+    .form-card-header span { color: var(--accent); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+    .form-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .form-control { background: var(--bg-card); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); color: var(--text); font-family: var(--font-body); font-size: 0.9rem; padding: 0.75rem 1rem; outline: none; width: 100%; transition: border-color var(--transition), box-shadow var(--transition); }
+    .form-control::placeholder { color: var(--text-muted); }
+    .form-control:focus { border-color: rgba(201,168,76,0.4); box-shadow: 0 0 0 3px rgba(201,168,76,0.08); }
+    textarea.form-control { resize: vertical; min-height: 120px; }
+    .btn-submit { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.85rem 2rem; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #060e1f; border: none; border-radius: 5px; font-family: var(--font-body); font-weight: 700; font-size: 0.88rem; cursor: pointer; letter-spacing: 0.04em; transition: box-shadow var(--transition), transform var(--transition), opacity var(--transition); margin-top: 0.5rem; }
+    .btn-submit:hover { box-shadow: 0 0 28px var(--accent-glow); transform: translateY(-2px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    #formSuccess { display: none; padding: 2.5rem; text-align: center; }
+    #formSuccess .success-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    #formSuccess h3 { font-family: var(--font-title); font-size: 1.25rem; color: var(--accent-2); margin-bottom: 0.5rem; }
+    #formSuccess p { color: var(--text-muted); font-size: 0.88rem; }
+
+    /* ── FOOTER ── */
+    footer { position: relative; z-index: 1; padding: 2.5rem 1.5rem; border-top: 1px solid rgba(201,168,76,0.08); background: var(--bg); }
+    .footer-inner { max-width: var(--max-w); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; }
+    .footer-copy { font-size: 0.78rem; color: var(--text-muted); }
+    .footer-copy a { color: var(--accent-2); }
+    .footer-socials { display: flex; gap: 0.65rem; }
+    .social-btn { width: 36px; height: 36px; border: 1px solid rgba(201,168,76,0.12); border-radius: 7px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: border-color var(--transition), color var(--transition), background var(--transition); }
+    .social-btn:hover { border-color: var(--accent); color: var(--accent-2); background: var(--accent-soft); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .about-grid { grid-template-columns: 240px 1fr; gap: 3rem; }
+      .exp-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .certs-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 900px) {
+      .skills-grid { grid-template-columns: 1fr 1fr; }
+      .projects-grid { grid-template-columns: 1fr 1fr; }
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .about-photo-col { flex-direction: row; align-items: flex-start; gap: 2rem; }
+      .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+    }
+    @media (max-width: 650px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .skills-grid, .projects-grid, .certs-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .about-detail-grid { grid-template-columns: 1fr; }
+      .hero-metrics { gap: 2rem; }
+      .hero-metric-div { display: none; }
+      .about-photo-col { flex-direction: column; align-items: center; }
+      .about-photo-frame, .about-photo-clip { width: 220px; }
+      .about-photo-clip { height: 295px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="radial-tl"></div>
+<div class="radial-br"></div>
+
+<!-- ═══ NAV ═══ -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-logo">
+      <div class="nav-logo-emblem">TDS</div>
+      Tinninnan D. Soro
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">Profil</a></li>
+      <li><a href="#experience">Expérience</a></li>
+      <li><a href="#skills">Compétences</a></li>
+      <li><a href="#projects">Projets</a></li>
+      <li><a href="#certifications">Certifications</a></li>
+      <li><a href="#contact" class="nav-cta">Contact</a></li>
+    </ul>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about"          class="mobile-link">Profil</a>
+  <a href="#experience"     class="mobile-link">Expérience</a>
+  <a href="#skills"         class="mobile-link">Compétences</a>
+  <a href="#projects"       class="mobile-link">Projets</a>
+  <a href="#certifications" class="mobile-link">Certifications</a>
+  <a href="#contact"        class="mobile-link">Contact</a>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="status-dot"></span>Ouvert aux opportunités — Ottawa, Canada</div>
+    <h1 class="hero-name">Tinninnan Daniel<br /><span class="gold">Soro</span></h1>
+    <p class="hero-role"><span class="typed-text" id="typedText"></span><span class="cursor"></span></p>
+    <p class="hero-tagline">« <strong>La donnée est l'actif le plus précieux d'une institution financière</strong> — je conçois les modèles qui transforment cet actif en avantage compétitif mesurable. »</p>
+    <div class="hero-chips">
+      <span class="chip">Détection de fraude</span>
+      <span class="chip">Analyse de risque</span>
+      <span class="chip">Finance quantitative</span>
+      <span class="chip">AML / Conformité</span>
+      <span class="chip">Machine Learning</span>
+      <span class="chip">Intelligence d'affaires</span>
+    </div>
+    <div class="hero-actions">
+      <a href="#projects" class="btn-gold">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Voir mes projets
+      </a>
+      <a href="mailto:sorotinninnan@gmail.com" class="btn-outline-gold">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+        Écrire un message
+      </a>
+    </div>
+    <div class="hero-metrics">
+      <div>
+        <div class="hero-metric-num"><span class="count" data-target="60">0</span><span>+</span></div>
+        <div class="hero-metric-label">Projets Data réalisés</div>
+      </div>
+      <div class="hero-metric-div"></div>
+      <div>
+        <div class="hero-metric-num"><span class="count" data-target="3">0</span><span> ans</span></div>
+        <div class="hero-metric-label">D'expérience</div>
+      </div>
+      <div class="hero-metric-div"></div>
+      <div>
+        <div class="hero-metric-num"><span class="count" data-target="5">0</span><span>+</span></div>
+        <div class="hero-metric-label">Domaines finance couverts</div>
+      </div>
+      <div class="hero-metric-div"></div>
+      <div>
+        <div class="hero-metric-num"><span class="count" data-target="98">0</span><span>%</span></div>
+        <div class="hero-metric-label">Précision modèles ML</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-photo-col reveal">
+        <div class="about-photo-frame">
+          <div class="about-photo-clip">
+            <img src="photo.png" alt="Tinninnan Daniel Soro" class="about-photo"
+              onerror="this.style.display='none';document.getElementById('photoPlaceholder').style.display='flex';" />
+            <div class="about-photo-placeholder" id="photoPlaceholder" style="display:none;">🧠</div>
+          </div>
+          <div class="about-photo-badge">Disponible</div>
+        </div>
+        <div class="about-social-links">
+          <a href="https://github.com/SoroTinninnan" target="_blank" rel="noopener" class="about-social-link" aria-label="GitHub">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/tinninnan-soro-b71542149" target="_blank" rel="noopener" class="about-social-link" aria-label="LinkedIn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="mailto:sorotinninnan@gmail.com" class="about-social-link" aria-label="Email">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="about-content">
+        <p class="section-label reveal">Profil professionnel</p>
+        <h2 class="section-title reveal reveal-delay-1">Data Scientist <span>Finance & Risque</span></h2>
+        <p class="about-bio reveal reveal-delay-2">Spécialisé en science des données appliquée au secteur financier, j'accompagne les institutions bancaires et les grandes entreprises dans la modélisation du risque, la détection de fraude et l'optimisation décisionnelle par l'intelligence artificielle. Ma démarche allie rigueur mathématique, sens stratégique et impact opérationnel mesurable.</p>
+        <div class="about-detail-grid reveal reveal-delay-3">
+          <div class="about-detail-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Ottawa, Canada</div>
+          <div class="about-detail-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>sorotinninnan@gmail.com</div>
+          <div class="about-detail-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>github.com/SoroTinninnan</div>
+          <div class="about-detail-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>linkedin.com/in/tinninnan-soro</div>
+        </div>
+        <div class="reveal reveal-delay-4">
+          <p class="domain-title">Domaines d'expertise financière</p>
+          <div class="domain-chips">
+            <span class="domain-chip">Détection de fraude</span>
+            <span class="domain-chip">Gestion des risques</span>
+            <span class="domain-chip">Conformité AML / KYC</span>
+            <span class="domain-chip">Finance quantitative</span>
+            <span class="domain-chip">Scoring de crédit</span>
+            <span class="domain-chip">Analyse de portefeuille</span>
+            <span class="domain-chip">Reporting réglementaire</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ EXPÉRIENCE & FORMATION ═══ -->
+<section id="experience">
+  <div class="container">
+    <p class="section-label reveal">Parcours</p>
+    <h2 class="section-title reveal reveal-delay-1">Expérience & <span>Formation</span></h2>
+    <p class="section-subtitle reveal reveal-delay-2" style="margin-bottom:3.5rem;">Un parcours académique rigoureux couplé à des expériences pratiques en data science appliquée au secteur financier.</p>
+    <div class="exp-grid">
+      <div class="reveal reveal-delay-1">
+        <div class="exp-col-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+          Expériences professionnelles
+        </div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">2024 — Présent</div>
+            <div class="timeline-role">Data Scientist — Finance & Risque</div>
+            <div class="timeline-company">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+              Projets indépendants — Ottawa, Canada
+            </div>
+            <div class="timeline-desc">Développement de modèles ML pour la détection de fraude transactionnelle et la classification de cybermenaces. Pipeline complet : ingestion, feature engineering, entraînement et déploiement sur Azure.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2023 — 2024</div>
+            <div class="timeline-role">Analyste Data & Business Intelligence</div>
+            <div class="timeline-company">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+              Projets académiques & collaboratifs
+            </div>
+            <div class="timeline-desc">Conception de tableaux de bord Power BI et Tableau pour le suivi de KPI financiers. Automatisation de rapports et analyses statistiques avancées sous Python et R.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2022 — 2023</div>
+            <div class="timeline-role">Chercheur — Cybersécurité & ML</div>
+            <div class="timeline-company">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+              Projet infonuagique — Azure
+            </div>
+            <div class="timeline-desc">Déploiement d'un honeypot sur Azure pour la collecte de données d'attaques réelles. Pipeline ML de classification des menaces avec T-Pot et Azure Machine Learning.</div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="exp-col-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          Formation académique
+        </div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">2022 — 2024</div>
+            <div class="timeline-role">M.Sc. Science des données appliquée</div>
+            <div class="timeline-company">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg>
+              Université d'Ottawa — Ottawa, Canada
+            </div>
+            <div class="timeline-desc">Spécialisation en machine learning, statistiques avancées, finance computationnelle et traitement de données massives. Mémoire sur la détection de fraude par apprentissage profond.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2018 — 2022</div>
+            <div class="timeline-role">B.Sc. Mathématiques & Informatique</div>
+            <div class="timeline-company">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg>
+              Université — Canada
+            </div>
+            <div class="timeline-desc">Fondamentaux en algèbre linéaire, probabilités, statistiques et algorithmique. Initiation à l'analyse de données financières et à la modélisation mathématique.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">Langues</div>
+            <div class="timeline-role">Multilinguisme professionnel</div>
+            <div class="timeline-company">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+              Compétences linguistiques
+            </div>
+            <div class="timeline-desc">🇫🇷 Français — Langue maternelle &nbsp;|&nbsp; 🇬🇧 Anglais — Niveau professionnel avancé</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ COMPÉTENCES ═══ -->
+<section id="skills">
+  <div class="container">
+    <div class="skills-header">
+      <p class="section-label reveal">Expertise technique</p>
+      <h2 class="section-title reveal reveal-delay-1">Stack <span>technique</span></h2>
+      <p class="section-subtitle reveal reveal-delay-2">Un arsenal complet pour transformer la donnée brute en valeur stratégique — des langages bas niveau jusqu'aux outils BI et cloud d'entreprise.</p>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card reveal">
+        <div class="skill-card-icon">💻</div>
+        <div class="skill-card-title">Langages de programmation</div>
+        <div class="skill-item"><div class="skill-info"><span class="skill-name">Python</span><span class="skill-pct">95%</span></div><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="95"></div></div></div>
+        <div class="skill-item"><div class="skill-info"><span class="skill-name">HTML / CSS</span><span class="skill-pct">98%</span></div><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="98"></div></div></div>
+        <div class="skill-item"><div class="skill-info"><span class="skill-name">SQL</span><span class="skill-pct">88%</span></div><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="88"></div></div></div>
+        <div class="skill-item"><div class="skill-info"><span class="skill-name">R</span><span class="skill-pct">85%</span></div><div class="skill-bar-bg">
+<div class="skill-bar-fill" data-width="85"></div></div></div>
+        <div class="skill-item"><div class="skill-info"><span class="skill-name">JavaScript</span><span class="skill-pct">82%</span></div><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="82"></div></div></div>
+      </div>
+
+      <div class="skill-card reveal reveal-delay-1">
+        <div class="skill-card-icon">🤖</div>
+        <div class="skill-card-title">Data Science & Machine Learning</div>
+        <div class="skill-item"><div class="skill-info"><span class="skill-name">Scikit-learn</span><span class="skill-pct">94%</span></div><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="94"></div></div></div>
+        <div class="skill-item"><div class="skill-info"><span class="skill-name">TensorFlow / Keras</span><span class="skill-pct">86%</span></div><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="86"></div></div></div>
+        <div class="skill-item"><div class="skill-info"><span class="skill-name">Pandas / NumPy</span><span class="skill-pct">96%</span></div><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="96"></div></div></div>
+        <div class="skill-item"><div class="skill-info"><span class="skill-name">Deep Learning</span><span class="skill-pct">84%</span></div><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="84"></div></div></div>
+      </div>
+
+      <div class="skill-card reveal reveal-delay-2">
+        <div class="skill-card-icon">☁️</div>
+        <div class="skill-card-title">Cloud, BI & Outils</div>
+        <div class="skill-item"><div class="skill-info"><span class="skill-name">Azure</span><span class="skill-pct">90%</span></div><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="90"></div></div></div>
+        <div class="skill-item"><div class="skill-info"><span class="skill-name">Power BI</span><span class="skill-pct">91%</span></div><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="91"></div></div></div>
+        <div class="skill-item"><div class="skill-info"><span class="skill-name">Tableau</span><span class="skill-pct">83%</span></div><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="83"></div></div></div>
+        <div class="skill-item"><div class="skill-info"><span class="skill-name">Git / GitHub</span><span class="skill-pct">89%</span></div><div class="skill-bar-bg"><div class="skill-bar-fill" data-width="89"></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CERTIFICATIONS ═══ -->
+<section id="certifications">
+  <div class="container">
+    <p class="section-label reveal">Reconnaissance</p>
+    <h2 class="section-title reveal reveal-delay-1">Certifications & <span>spécialisations</span></h2>
+    <p class="section-subtitle reveal reveal-delay-2">Des validations académiques et techniques alignées avec les standards de la data, du cloud et de l’analytique avancée.</p>
+
+    <div class="certs-grid">
+      <div class="cert-card reveal">
+        <div class="cert-icon">📊</div>
+        <div>
+          <div class="cert-name">Google Data Analytics Professional Certificate</div>
+          <div class="cert-issuer">Google / Coursera</div>
+          <div class="cert-year">2024</div>
+        </div>
+      </div>
+
+      <div class="cert-card reveal reveal-delay-1">
+        <div class="cert-icon">☁️</div>
+        <div>
+          <div class="cert-name">Microsoft Azure Fundamentals</div>
+          <div class="cert-issuer">Microsoft</div>
+          <div class="cert-year">2024</div>
+        </div>
+      </div>
+
+      <div class="cert-card reveal reveal-delay-2">
+        <div class="cert-icon">🤖</div>
+        <div>
+          <div class="cert-name">Machine Learning Specialization</div>
+          <div class="cert-issuer">Stanford / DeepLearning.AI</div>
+          <div class="cert-year">2023</div>
+        </div>
+      </div>
+
+      <div class="cert-card reveal">
+        <div class="cert-icon">🛡️</div>
+        <div>
+          <div class="cert-name">Cybersecurity & Threat Intelligence</div>
+          <div class="cert-issuer">Spécialisation académique</div>
+          <div class="cert-year">2023</div>
+        </div>
+      </div>
+
+      <div class="cert-card reveal reveal-delay-1">
+        <div class="cert-icon">📈</div>
+        <div>
+          <div class="cert-name">Financial Engineering & Risk Modeling</div>
+          <div class="cert-issuer">Formation spécialisée</div>
+          <div class="cert-year">2024</div>
+        </div>
+      </div>
+
+      <div class="cert-card reveal reveal-delay-2">
+        <div class="cert-icon">🧮</div>
+        <div>
+          <div class="cert-name">Advanced Statistics for Data Science</div>
+          <div class="cert-issuer">Certification universitaire</div>
+          <div class="cert-year">2024</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROJETS ═══ -->
+<section id="projects">
+  <div class="container">
+    <div class="projects-header">
+      <p class="section-label reveal">Réalisations</p>
+      <h2 class="section-title reveal reveal-delay-1">Projets à fort <span>impact</span></h2>
+      <p class="section-subtitle reveal reveal-delay-2">Une sélection de projets illustrant ma capacité à concevoir des solutions data robustes pour la finance, la cybersécurité et la décision stratégique.</p>
+    </div>
+
+    <div class="projects-grid">
+      <article class="project-card reveal">
+        <div class="project-thumb">
+          <div class="project-thumb-bg"></div>
+          <div class="project-thumb-inner">🛡️</div>
+          <div class="project-thumb-overlay">
+            <a href="https://github.com/SoroTinninnan" target="_blank" rel="noopener" class="project-link-btn">GitHub</a>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag tag-gold">Fraude</span>
+            <span class="tag">Python</span>
+            <span class="tag">ML</span>
+          </div>
+          <h3 class="project-title">Détection de fraude transactionnelle</h3>
+          <p class="project-desc">Conception d’un modèle supervisé pour identifier des transactions suspectes en temps réel à partir de variables comportementales, temporelles et financières.</p>
+          <div class="project-impact">Impact : amélioration de la détection précoce et réduction du bruit analytique.</div>
+        </div>
+      </article>
+
+      <article class="project-card reveal reveal-delay-1">
+        <div class="project-thumb">
+          <div class="project-thumb-bg"></div>
+          <div class="project-thumb-inner">☁️</div>
+          <div class="project-thumb-overlay">
+            <a href="https://github.com/SoroTinninnan" target="_blank" rel="noopener" class="project-link-btn">GitHub</a>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag">Azure</span>
+            <span class="tag">Cybersécurité</span>
+            <span class="tag">Data Pipeline</span>
+          </div>
+          <h3 class="project-title">Honeypot cloud & classification des attaques</h3>
+          <p class="project-desc">Déploiement d’un environnement de collecte sur Azure avec T-Pot afin de capturer des attaques réelles puis entraîner un modèle de classification des menaces.</p>
+          <div class="project-impact">Impact : meilleure compréhension des schémas d’attaque et automatisation de l’analyse.</div>
+        </div>
+      </article>
+
+      <article class="project-card reveal reveal-delay-2">
+        <div class="project-thumb">
+          <div class="project-thumb-bg"></div>
+          <div class="project-thumb-inner">📈</div>
+          <div class="project-thumb-overlay">
+            <a href="https://github.com/SoroTinninnan" target="_blank" rel="noopener" class="project-link-btn">GitHub</a>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag tag-gold">Finance</span>
+            <span class="tag">Power BI</span>
+            <span class="tag">SQL</span>
+          </div>
+          <h3 class="project-title">Dashboard de performance financière</h3>
+          <p class="project-desc">Construction d’un tableau de bord décisionnel permettant le suivi de KPI financiers, de la rentabilité, des écarts budgétaires et des tendances de portefeuille.</p>
+          <div class="project-impact">Impact : accélération de la prise de décision et meilleure visibilité exécutive.</div>
+        </div>
+      </article>
+
+      <article class="project-card reveal">
+        <div class="project-thumb">
+          <div class="project-thumb-bg"></div>
+          <div class="project-thumb-inner">🧠</div>
+          <div class="project-thumb-overlay">
+            <a href="https://github.com/SoroTinninnan" target="_blank" rel="noopener" class="project-link-btn">GitHub</a>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag">Deep Learning</span>
+            <span class="tag">Keras</span>
+            <span class="tag">Classification</span>
+          </div>
+          <h3 class="project-title">Scoring de risque par apprentissage profond</h3>
+          <p class="project-desc">Développement d’un système de scoring pour estimer le niveau de risque d’un profil ou d’un dossier à partir de données historiques et de variables dérivées.</p>
+          <div class="project-impact">Impact : segmentation plus fine du risque et appui à la conformité.</div>
+        </div>
+      </article>
+
+      <article class="project-card reveal reveal-delay-1">
+        <div class="project-thumb">
+          <div class="project-thumb-bg"></div>
+          <div class="project-thumb-inner">📉</div>
+          <div class="project-thumb-overlay">
+            <a href="https://github.com/SoroTinninnan" target="_blank" rel="noopener" class="project-link-btn">GitHub</a>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag tag-gold">Risque</span>
+            <span class="tag">Python</span>
+            <span class="tag">Statistiques</span>
+          </div>
+          <h3 class="project-title">Modélisation de risque de crédit</h3>
+          <p class="project-desc">Création d’un modèle prédictif pour évaluer la probabilité de défaut à partir d’indicateurs socio-financiers, transactionnels et comportementaux.</p>
+          <div class="project-impact">Impact : amélioration de la qualité d’évaluation et support au crédit scoring.</div>
+        </div>
+      </article>
+
+      <article class="project-card reveal reveal-delay-2">
+        <div class="project-thumb">
+          <div class="project-thumb-bg"></div>
+          <div class="project-thumb-inner">📡</div>
+          <div class="project-thumb-overlay">
+            <a href="https://github.com/SoroTinninnan" target="_blank" rel="noopener" class="project-link-btn">GitHub</a>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag">Tableau</span>
+            <span class="tag">BI</span>
+            <span class="tag">Reporting</span>
+          </div>
+          <h3 class="project-title">Reporting automatisé pour KPI exécutifs</h3>
+          <p class="project-desc">Automatisation de rapports dynamiques destinés au management avec extraction, transformation et visualisation de données multi-sources.</p>
+          <div class="project-impact">Impact : réduction du temps de reporting et standardisation des indicateurs.</div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section id="contact">
+  <div class="container">
+    <p class="section-label reveal">Prendre contact</p>
+    <h2 class="section-title reveal reveal-delay-1">Construisons une solution <span>data-driven</span></h2>
+    <p class="section-subtitle reveal reveal-delay-2" style="margin-bottom:3rem;">Je suis disponible pour discuter de projets en data science, analytique financière, IA appliquée, BI ou cybersécurité. Laissez-moi un message.</p>
+
+    <div class="contact-grid">
+      <div class="reveal">
+        <h3 class="contact-info-title">Coordonnées</h3>
+        <p class="contact-info-text">Disponible pour opportunités professionnelles, missions freelance, collaborations académiques ou projets d’entreprise à fort enjeu analytique.</p>
+
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Localisation</div>
+            <div class="contact-item-value">Ottawa, Ontario, Canada</div>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Email</div>
+            <div class="contact-item-value">sorotinninnan@gmail.com</div>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Domaines</div>
+            <div class="contact-item-value">Data Science, Finance, Risque, BI, ML</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card reveal reveal-delay-1">
+        <div class="form-card-header">
+          <span>✦</span> Envoyer un message
+        </div>
+
+        <form id="contactForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="name">Nom</label>
+              <input class="form-control" type="text" id="name" name="name" placeholder="Votre nom" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="email">Email</label>
+              <input class="form-control" type="email" id="email" name="email" placeholder="votre@email.com" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="subject">Sujet</label>
+            <input class="form-control" type="text" id="subject" name="subject" placeholder="Objet de votre message" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="message">Message</label>
+            <textarea class="form-control" id="message" name="message" placeholder="Décrivez votre besoin, projet ou opportunité..." required></textarea>
+          </div>
+
+          <a href="mailto:sorotinninnan@gmail.com?subject=Contact depuis portfolio&body=Bonjour," class="btn-submit">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <line x1="22" y1="2" x2="11" y2="13"/>
+    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+  </svg>
+  Envoyer
+</a>
+        </form>
+
+        <div id="formSuccess">
+          <div class="success-icon">✅</div>
+          <h3>Message envoyé</h3>
+          <p>Merci pour votre message. Je vous répondrai dans les plus brefs délais.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-copy">
+      © 2026 Tinninnan Daniel Soro — Portfolio professionnel. Conçu avec précision, données & élégance.
+    </div>
+    <div class="footer-socials">
+      <a href="https://github.com/SoroTinninnan" target="_blank" rel="noopener" class="social-btn" aria-label="GitHub">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/tinninnan-soro-b71542149" target="_blank" rel="noopener" class="social-btn" aria-label="LinkedIn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      </a>
+      <a href="mailto:sorotinninnan@gmail.com" class="social-btn" aria-label="Email">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ─────────────────────────────────────────
+  // NAVBAR SCROLL
+  // ─────────────────────────────────────────
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 18);
+  });
+
+  // ─────────────────────────────────────────
+  // MENU MOBILE
+  // ─────────────────────────────────────────
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const mobileLinks = document.querySelectorAll('.mobile-link');
+
+  hamburgerBtn.addEventListener('click', () => {
+    hamburgerBtn.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+  });
+
+  mobileLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      hamburgerBtn.classList.remove('open');
+      mobileMenu.classList.remove('open');
+    });
+  });
+
+  // ─────────────────────────────────────────
+  // TYPED TEXT
+  // ─────────────────────────────────────────
+  const typedText = document.getElementById('typedText');
+  const roles = [
+    'Data Scientist',
+    'Spécialiste Finance Quantitative',
+    'Expert Détection de Fraude',
+    'Analyste Risque & AML',
+    'Consultant BI & Machine Learning'
+  ];
+
+  let roleIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+
+  function typeLoop() {
+    const current = roles[roleIndex];
+    typedText.textContent = current.substring(0, charIndex);
+
+    if (!isDeleting) {
+      charIndex++;
+      if (charIndex > current.length) {
+        isDeleting = true;
+        setTimeout(typeLoop, 1200);
+        return;
+      }
+    } else {
+      charIndex--;
+      if (charIndex < 0) {
+        isDeleting = false;
+        roleIndex = (roleIndex + 1) % roles.length;
+        charIndex = 0;
+      }
+    }
+
+    setTimeout(typeLoop, isDeleting ? 45 : 80);
+  }
+  typeLoop();
+
+  // ─────────────────────────────────────────
+  // REVEAL ON SCROLL
+  // ─────────────────────────────────────────
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  // ─────────────────────────────────────────
+  // COMPTEURS HERO
+  // ─────────────────────────────────────────
+  const counters = document.querySelectorAll('.count');
+  let countersStarted = false;
+
+  function animateCounters() {
+    if (countersStarted) return;
+    countersStarted = true;
+
+    counters.forEach(counter => {
+      const target = +counter.dataset.target;
+      let current = 0;
+      const increment = Math.max(1, Math.ceil(target / 80));
+
+      const update = () => {
+        current += increment;
+        if (current >= target) {
+          counter.textContent = target;
+        } else {
+          counter.textContent = current;
+          requestAnimationFrame(update);
+        }
+      };
+      update();
+    });
+  }
+
+  const heroMetrics = document.querySelector('.hero-metrics');
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCounters();
+        counterObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+
+  if (heroMetrics) counterObserver.observe(heroMetrics);
+
+  // ─────────────────────────────────────────
+  // BARRES DE COMPÉTENCES
+  // ─────────────────────────────────────────
+  const skillBars = document.querySelectorAll('.skill-bar-fill');
+  const skillsSection = document.getElementById('skills');
+  let skillsAnimated = false;
+
+  function animateSkillBars() {
+    if (skillsAnimated) return;
+    skillsAnimated = true;
+    skillBars.forEach(bar => {
+      bar.style.width = bar.dataset.width + '%';
+    });
+  }
+
+  const skillsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateSkillBars();
+        skillsObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.25 });
+
+  if (skillsSection) skillsObserver.observe(skillsSection);
+
+  // ─────────────────────────────────────────
+  // FORMULAIRE CONTACT + SUPABASE
+  // ─────────────────────────────────────────
+  const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+  const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';
+
+  let supabaseClient = null;
+  if (SUPABASE_URL !== 'https://YOUR-PROJECT.supabase.co' && SUPABASE_ANON_KEY !== 'YOUR-ANON-KEY') {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+
+  const contactForm = document.getElementById('contactForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const formSuccess = document.getElementById('formSuccess');
+
+  contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Envoi en cours...';
+
+    const formData = new FormData(contactForm);
+    const payload = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      subject: formData.get('subject'),
+      message: formData.get('message'),
+      created_at: new Date().toISOString()
+    };
+
+    try {
+      if (supabaseClient) {
+        const { error } = await supabaseClient
+          .from('contacts')
+          .insert([payload]);
+
+        if (error) throw error;
+      } else {
+        console.log('Supabase non configuré. Données simulées :', payload);
+      }
+
+      contactForm.style.display = 'none';
+      formSuccess.style.display = 'block';
+    } catch (error) {
+      alert("Une erreur est survenue lors de l'envoi du message.");
+      console.error(error);
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+        Envoyer
+      `;
+      return;
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+      Envoyer
+    `;
+    contactForm.reset();
+  });
+</script>
+
+</body>
+</html>
