@@ -1049,7 +1049,7 @@
     try {
       if (supabaseClient) {
         const { error } = await supabaseClient
-          .from('contacts')
+          .from('contact_messages')
           .insert([payload]);
 
         if (error) throw error;
